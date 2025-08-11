@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     permissions:
-      id-token: write
       contents: read
       pull-requests: write
     steps:
@@ -25,13 +24,14 @@ jobs:
         with: { node-version: '22.18.0' }
       - run: npm ci
       - run: npm run build
-      - name: Deploy PR preview to Firebase (dev project)
+      - name: Deploy PR preview to Firebase dev
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
           projectId: sncrwebsite-dev
           channelId: pr-${{ github.event.number }}
+          args: --only hosting:dev
 
   deploy-main:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -45,13 +45,14 @@ jobs:
         with: { node-version: '22.18.0' }
       - run: npm ci
       - run: npm run build
-      - name: Deploy to Dev live channel
+      - name: Deploy to Dev live channel (sncrwebsite-dev)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
           projectId: sncrwebsite-dev
           channelId: live
+          args: --only hosting:dev
 
   promote-to-prod:
     needs: deploy-main
@@ -68,10 +69,12 @@ jobs:
         with: { node-version: '22.18.0' }
       - run: npm ci
       - run: npm run build
-      - name: Deploy to Prod live channel
+      - name: Deploy to Prod live channel (sncrwebsite-prod)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
           projectId: sncrwebsite-prod
           channelId: live
+          args: --only hosting:prod
+
