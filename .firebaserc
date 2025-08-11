@@ -1,0 +1,7 @@
+{
+  "projects": { "dev": "sncrwebsite-dev", "prod": "sncrwebsite-prod" },
+  "targets": {
+    "sncrwebsite-dev": { "hosting": { "dev": [ "sncrwebsite-dev" ] } },
+    "sncrwebsite-prod": { "hosting": { "prod": [ "sncrwebsite-prod" ] } }
+  }
+}
